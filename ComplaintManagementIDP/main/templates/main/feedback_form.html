@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provide Feedback</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .feedback-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            background: var(--dark-gradient);
+        }
+
+        .feedback-card {
+            width: 100%;
+            max-width: 550px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--box-shadow);
+            animation: fadeIn 0.5s ease-out;
+            margin: 1rem;
+        }
+
+        .feedback-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .feedback-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .complaint-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            color: white;
+            line-height: 1.6;
+        }
+
+        .rating-group {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .rating-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: transparent;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rating-btn:hover,
+        .rating-btn.selected {
+            background: var(--primary-gradient);
+            border-color: transparent;
+            transform: scale(1.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(20, 30, 48, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-control:focus {
+            border-color: #00c6ff;
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.2);
+            outline: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+            font-size: 0.9rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .feedback-card {
+                margin: 0.5rem;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="feedback-container">
+        <a href="{{ url_for('citizen_dashboard') }}" class="back-btn">← Back to Dashboard</a>
+        
+        <div class="feedback-card">
+            <div class="feedback-header">
+                <h1 class="feedback-title">Provide Feedback</h1>
+            </div>
+
+            <div class="complaint-info">
+                <div class="info-label">Complaint Description</div>
+                <div class="info-value">{{ complaint.description }}</div>
+            </div>
+
+            <form method="POST" action="{{ url_for('submit_feedback', complaint_id=complaint.complaint_id) }}">
+                <div class="form-group">
+                    <div class="info-label">Rate your experience</div>
+                    <div class="rating-group">
+                        {% for i in range(1, 6) %}
+                            <button type="button" 
+                                    class="rating-btn" 
+                                    onclick="selectRating({{ i }})">
+                                {{ i }}
+                            </button>
+                        {% endfor %}
+                    </div>
+                    <input type="hidden" name="rating" id="rating" required>
+                </div>
+
+                <div class="form-group">
+                    <textarea class="form-control" 
+                              name="comments" 
+                              placeholder="Share your feedback comments..." 
+                              required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function selectRating(rating) {
+            document.getElementById('rating').value = rating;
+            // Remove selected class from all buttons
+            document.querySelectorAll('.rating-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            // Add selected class to buttons up to the chosen rating
+            for (let i = 1; i <= rating; i++) {
+                document.querySelectorAll('.rating-btn')[i-1].classList.add('selected');
+            }
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaint Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .home-container {
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: var(--dark-gradient);
+            color: white;
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 198, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 198, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        .hero-section {
+            position: relative;
+            padding: 4rem 2rem;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 3rem;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #00c6ff;
+        }
+
+        .card-content {
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .card-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--primary-gradient);
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00c6ff;
+            border-radius: 50%;
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(10px, -10px); }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .cards-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="home-container">
+        <div class="cyber-grid"></div>
+        
+        <!-- Floating particles -->
+        <div class="floating-particles">
+            {% for i in range(20) %}
+                <div class="particle" 
+                     style="left: {{ range(0, 100)|random }}%; 
+                            top: {{ range(0, 100)|random }}%; 
+                            animation-delay: -{{ range(0, 10)|random }}s">
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="hero-section">
+            <h1 class="hero-title">Complaint Management System</h1>
+            <p class="hero-subtitle">Efficient solutions for managing and resolving complaints</p>
+        </div>
+
+        <div class="cards-container">
+            <div class="card">
+                <h2 class="card-title">Citizens</h2>
+                <p class="card-content">Register and track your complaints with ease. Get real-time updates on complaint status.</p>
+                <div class="card-buttons">
+                    <a href="{{ url_for('citizen_login') }}" class="btn">Login</a>
+                    <a href="{{ url_for('citizen_register') }}" class="btn">Register</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Departments</h2>
+                <p class="card-content">Manage and resolve citizen complaints efficiently. Track complaint resolution progress.</p>
+                <div class="card-buttons">
+                    <a href="{{ url_for('department_login') }}" class="btn">Login</a>
+                    <a href="{{ url_for('department_register') }}" class="btn">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

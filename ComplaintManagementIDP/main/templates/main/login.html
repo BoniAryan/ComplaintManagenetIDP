@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            background: var(--dark-gradient);
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            width: 1000px;
+            height: 1000px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            top: -50%;
+            left: -20%;
+            opacity: 0.2;
+            animation: rotate 20s linear infinite;
+        }
+
+        .login-container::after {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            bottom: -40%;
+            right: -20%;
+            opacity: 0.2;
+            animation: rotate 15s linear infinite reverse;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 450px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--box-shadow);
+            animation: fadeIn 0.5s ease-out;
+            margin: 1rem;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            height: 3rem;
+        }
+
+        .form-label {
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            padding: 0 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .form-control:focus,
+        .form-control:not(:placeholder-shown) {
+            border-color: #00c6ff;
+            box-shadow: 0 0 20px rgba(0, 198, 255, 0.3);
+        }
+
+        .form-control:focus ~ .form-label,
+        .form-control:not(:placeholder-shown) ~ .form-label {
+            top: -0.5rem;
+            left: 0.8rem;
+            font-size: 0.8rem;
+            background: rgba(20, 30, 48, 0.95);
+            color: #00c6ff;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .register-link a {
+            color: #00c6ff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .register-link a:hover {
+            text-shadow: var(--neon-shadow);
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-link {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1 class="login-title">Citizen Login</h1>
+                <p>Welcome back! Please login to continue.</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('citizen_login') }}">
+                <div class="form-group">
+                    <input type="email" 
+                           class="form-control" 
+                           id="email" 
+                           name="email" 
+                           placeholder=" " 
+                           required>
+                    <label class="form-label" for="email">Email Address</label>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" 
+                           class="form-control" 
+                           id="contact_number" 
+                           name="contact_number" 
+                           placeholder=" " 
+                           required>
+                    <label class="form-label" for="contact_number">Contact Number</label>
+                </div>
+
+                {% if error %}
+                <div class="error-message">
+                    {{ error }}
+                </div>
+                {% endif %}
+
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+
+            <div class="register-link">
+                <p>Don't have an account? <a href="{{ url_for('citizen_register') }}">Register here</a></p>
+            </div>
+
+            <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>

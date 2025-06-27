@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Complaint Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .details-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            background: var(--dark-gradient);
+        }
+
+        .details-card {
+            width: 100%;
+            max-width: 800px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--box-shadow);
+            animation: fadeIn 0.5s ease-out;
+            margin: 1rem;
+        }
+
+        .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .complaint-id {
+            font-size: 1.2rem;
+            color: #00c6ff;
+        }
+
+        .priority-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .priority-badge.HIGH {
+            background: linear-gradient(135deg, #ff3b30, #ff9500);
+        }
+
+        .priority-badge.MEDIUM {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+        }
+
+        .priority-badge.LOW {
+            background: linear-gradient(135deg, #34c759, #00c6ff);
+        }
+
+        .info-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            color: white;
+            line-height: 1.6;
+        }
+
+        .timeline {
+            margin-top: 2rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00c6ff;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 12px;
+            width: 2px;
+            height: calc(100% + 1rem);
+            background: rgba(0, 198, 255, 0.3);
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-status {
+            font-weight: 500;
+            color: #00c6ff;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-remarks {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 10;
+            font-size: 0.9rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 768px) {
+            .details-card {
+                margin: 0.5rem;
+                padding: 1.5rem;
+            }
+
+            .timeline-item {
+                padding-left: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="details-container">
+        <a href="{{ url_for('citizen_dashboard') }}" class="back-btn">← Back to Dashboard</a>
+        
+        <div class="details-card">
+            <div class="details-header">
+                <span class="complaint-id">Complaint #{{ complaint.complaint_id }}</span>
+                <span class="priority-badge {{ complaint.priority }}">{{ complaint.priority }}</span>
+            </div>
+
+            <div class="info-section">
+                <div class="info-label">Description</div>
+                <div class="info-value">{{ complaint.description }}</div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-label">Department</div>
+                <div class="info-value">{{ department_name }}</div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-label">Current Status</div>
+                <div class="info-value">
+                    {% if complaint.logs %}
+                        {{ complaint.logs[0].status }}
+                    {% else %}
+                        Pending
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="timeline">
+                <h3 class="info-label">Status Timeline</h3>
+                {% if complaint.logs %}
+                    {% for log in complaint.logs %}
+                        <div class="timeline-item">
+                            <div class="timeline-date">{{ log.timestamp.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                            <div class="timeline-status">{{ log.status }}</div>
+                            <div class="timeline-remarks">{{ log.remarks }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="timeline-item">
+                        <div class="timeline-date">{{ complaint.date_submitted.strftime('%B %d, %Y') }}</div>
+                        <div class="timeline-status">Complaint Registered</div>
+                        <div class="timeline-remarks">Awaiting department response</div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

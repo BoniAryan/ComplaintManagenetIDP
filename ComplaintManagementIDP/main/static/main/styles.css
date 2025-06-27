@@ -1,0 +1,351 @@
+/* Modern Futuristic Theme */
+:root {
+    --primary-gradient: linear-gradient(135deg, #00c6ff, #0072ff);
+    --secondary-gradient: linear-gradient(135deg, #4facfe, #00f2fe);
+    --accent-gradient: linear-gradient(135deg, #21d4fd, #b721ff);
+    --dark-gradient: linear-gradient(135deg, #141e30, #243b55);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+    --box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --neon-shadow: 0 0 10px rgba(0, 198, 255, 0.5),
+                   0 0 20px rgba(0, 198, 255, 0.3),
+                   0 0 30px rgba(0, 198, 255, 0.1);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--dark-gradient);
+    min-height: 100vh;
+    color: #fff;
+}
+
+/* Futuristic Input Styles */
+.form-control {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 10px rgba(0, 198, 255, 0.1);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #00c6ff;
+    box-shadow: 0 0 0 2px rgba(0, 198, 255, 0.3),
+                inset 0 0 15px rgba(0, 198, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: var(--glass-border);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: var(--box-shadow);
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--neon-shadow);
+}
+
+/* Futuristic Buttons */
+.btn {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--neon-shadow);
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: 0.5s;
+}
+
+.btn:hover::before {
+    left: 100%;
+}
+
+/* Animated Border */
+.border-gradient {
+    position: relative;
+    padding: 2px;
+    background: var(--primary-gradient);
+    border-radius: 10px;
+}
+
+.border-gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 10px;
+    padding: 2px;
+    background: var(--primary-gradient);
+    -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+}
+
+/* Futuristic Select */
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+}
+
+/* Animated Labels */
+.form-group {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.form-group label {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    padding: 0 0.5rem;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: text;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.form-control:focus ~ label,
+.form-control:not(:placeholder-shown) ~ label {
+    top: -0.5rem;
+    left: 0.8rem;
+    font-size: 0.8rem;
+    color: #00c6ff;
+    background: rgba(20, 30, 48, 0.95);
+}
+
+/* Loading Animation */
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background: var(--primary-gradient);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { transform: scaleX(0); transform-origin: left; }
+    50% { transform: scaleX(1); transform-origin: left; }
+    50.1% { transform: scaleX(1); transform-origin: right; }
+    100% { transform: scaleX(0); transform-origin: right; }
+}
+
+/* Neon Text Effect */
+.neon-text {
+    color: #fff;
+    text-shadow: 0 0 5px #00c6ff,
+                 0 0 10px #00c6ff,
+                 0 0 20px #00c6ff;
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse 2s infinite;
+}
+
+.status-active { background: #00f2fe; }
+.status-pending { background: #ffd700; }
+.status-resolved { background: #00ff9d; }
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 242, 254, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
+}
+
+/* Hover Effects */
+.hover-float {
+    transition: transform 0.3s ease;
+}
+
+.hover-float:hover {
+    transform: translateY(-5px);
+}
+
+/* Grid Layout */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-control {
+        font-size: 16px; /* Prevent zoom on mobile */
+    }
+}
+
+/* General Button Container */
+.button-container {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    flex-wrap: wrap;
+}
+
+/* Action Buttons Group */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Individual Button Styles */
+.btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary-gradient);
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-width: 120px;
+    text-align: center;
+    margin: 0.5rem 0;
+}
+
+/* Fixed Position Buttons */
+.fixed-button {
+    position: fixed;
+    bottom: 2rem;
+    z-index: 100;
+}
+
+.fixed-button.right {
+    right: 2rem;
+}
+
+.fixed-button.left {
+    left: 2rem;
+}
+
+/* Back Button */
+.back-btn {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    z-index: 10;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+/* Logout Button */
+.logout-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+}
+
+/* Update Form Buttons */
+.update-form .btn {
+    margin-top: 1rem;
+    width: auto;
+    display: inline-block;
+}
+
+/* Card Action Buttons */
+.card-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+/* Responsive Button Adjustments */
+@media (max-width: 768px) {
+    .button-container, 
+    .action-buttons,
+    .card-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin: 0.25rem 0;
+    }
+
+    .fixed-button {
+        position: static;
+        margin: 1rem 0;
+    }
+
+    .back-btn,
+    .logout-btn {
+        position: static;
+        margin: 0.5rem;
+        display: inline-block;
+    }
+}
