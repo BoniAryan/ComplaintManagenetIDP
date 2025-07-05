@@ -5,8 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complaint Management System</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #00c6ff, #0072ff);
+            --dark-gradient: linear-gradient(135deg, #0c0c0c, #1a1a1a);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+            --neon-shadow: 0 0 30px rgba(0, 198, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
         .home-container {
             min-height: 100vh;
             position: relative;
@@ -21,12 +40,17 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(0, 198, 255, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 198, 255, 0.1) 1px, transparent 1px);
             background-size: 50px 50px;
             animation: moveGrid 20s linear infinite;
             opacity: 0.3;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
         }
 
         .hero-section {
@@ -42,7 +66,13 @@
             background: linear-gradient(135deg, #00c6ff, #0072ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
         }
 
         .hero-subtitle {
@@ -73,6 +103,11 @@
             animation: fadeIn 0.5s ease-out;
             position: relative;
             overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .card::before {
@@ -125,6 +160,7 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            display: inline-block;
         }
 
         .btn::before {
@@ -175,6 +211,28 @@
             50% { transform: translate(10px, -10px); }
         }
 
+        /* Particle positioning */
+        .particle:nth-child(1) { left: 10%; top: 20%; animation-delay: -1s; }
+        .particle:nth-child(2) { left: 80%; top: 30%; animation-delay: -2s; }
+        .particle:nth-child(3) { left: 50%; top: 10%; animation-delay: -3s; }
+        .particle:nth-child(4) { left: 20%; top: 70%; animation-delay: -4s; }
+        .particle:nth-child(5) { left: 90%; top: 60%; animation-delay: -5s; }
+        .particle:nth-child(6) { left: 30%; top: 80%; animation-delay: -6s; }
+        .particle:nth-child(7) { left: 70%; top: 90%; animation-delay: -7s; }
+        .particle:nth-child(8) { left: 60%; top: 40%; animation-delay: -8s; }
+        .particle:nth-child(9) { left: 40%; top: 50%; animation-delay: -9s; }
+        .particle:nth-child(10) { left: 15%; top: 90%; animation-delay: -10s; }
+        .particle:nth-child(11) { left: 85%; top: 15%; animation-delay: -11s; }
+        .particle:nth-child(12) { left: 25%; top: 45%; animation-delay: -12s; }
+        .particle:nth-child(13) { left: 75%; top: 75%; animation-delay: -13s; }
+        .particle:nth-child(14) { left: 35%; top: 25%; animation-delay: -14s; }
+        .particle:nth-child(15) { left: 65%; top: 85%; animation-delay: -15s; }
+        .particle:nth-child(16) { left: 45%; top: 65%; animation-delay: -16s; }
+        .particle:nth-child(17) { left: 55%; top: 35%; animation-delay: -17s; }
+        .particle:nth-child(18) { left: 95%; top: 45%; animation-delay: -18s; }
+        .particle:nth-child(19) { left: 5%; top: 55%; animation-delay: -19s; }
+        .particle:nth-child(20) { left: 75%; top: 25%; animation-delay: -20s; }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.5rem;
@@ -182,6 +240,17 @@
 
             .cards-container {
                 padding: 1rem;
+                grid-template-columns: 1fr;
+            }
+
+            .card-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 200px;
             }
         }
     </style>
@@ -189,16 +258,29 @@
 <body>
     <div class="home-container">
         <div class="cyber-grid"></div>
-        
+
         <!-- Floating particles -->
         <div class="floating-particles">
-            {% for i in range(20) %}
-                <div class="particle" 
-                     style="left: {{ range(0, 100)|random }}%; 
-                            top: {{ range(0, 100)|random }}%; 
-                            animation-delay: -{{ range(0, 10)|random }}s">
-                </div>
-            {% endfor %}
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
         </div>
 
         <div class="hero-section">
@@ -211,8 +293,8 @@
                 <h2 class="card-title">Citizens</h2>
                 <p class="card-content">Register and track your complaints with ease. Get real-time updates on complaint status.</p>
                 <div class="card-buttons">
-                    <a href="{{ url_for('citizen_login') }}" class="btn">Login</a>
-                    <a href="{{ url_for('citizen_register') }}" class="btn">Register</a>
+                    <a href="{% url 'main:citizen_login' %}" class="btn">Login</a>
+                    <a href="{% url 'main:citizen_register' %}" class="btn">Register</a>
                 </div>
             </div>
 
@@ -220,8 +302,8 @@
                 <h2 class="card-title">Departments</h2>
                 <p class="card-content">Manage and resolve citizen complaints efficiently. Track complaint resolution progress.</p>
                 <div class="card-buttons">
-                    <a href="{{ url_for('department_login') }}" class="btn">Login</a>
-                    <a href="{{ url_for('department_register') }}" class="btn">Register</a>
+                    <a href="{% url 'main:department_login' %}" class="btn">Login</a>
+                    <a href="{% url 'main:department_register' %}" class="btn">Register</a>
                 </div>
             </div>
         </div>

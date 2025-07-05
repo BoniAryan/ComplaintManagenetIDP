@@ -1,280 +1,463 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Department Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        .dashboard-header {
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border-bottom: var(--glass-border);
-            padding: 2rem;
-            position: relative;
-        }
+{% extends 'main/base.html' %}
+{% load static %}
 
-        .back-btn {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            z-index: 10;
-            font-size: 0.9rem;
-        }
+{% block title %}Department Dashboard{% endblock %}
 
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(-5px);
-        }
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-bottom: var(--glass-border);
+        padding: 2rem;
+        position: relative;
+    }
 
-        .department-title {
-            font-size: 2.5rem;
-            color: #00c6ff;
-            margin: 0.5rem 0 1.5rem 0;
-        }
+    .back-btn {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 5px;
+        color: white;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        z-index: 10;
+        font-size: 0.9rem;
+    }
 
-        .nav-tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
+    .back-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateX(-5px);
+    }
 
-        .nav-tab {
-            padding: 0.75rem 1.5rem;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
+    .department-title {
+        font-size: 2.5rem;
+        color: #00c6ff;
+        margin: 0.5rem 0 1rem 0;
+    }
 
-        .nav-tab.active {
-            background: #00c6ff;
-        }
+    /* Performance Stats Section */
+    .performance-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
 
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #00c6ff;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .star-rating {
+        color: #ffd700;
+        font-size: 1.2rem;
+        margin-top: 0.5rem;
+    }
+
+    .nav-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .nav-tab {
+        padding: 0.75rem 1.5rem;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .nav-tab.active {
+        background: #00c6ff;
+    }
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .complaint-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        height: fit-content;
+    }
+
+    .complaint-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .complaint-id {
+        font-size: 1.2rem;
+        color: #00c6ff;
+    }
+
+    .priority-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        background: #2ecc71;
+    }
+
+    .priority-badge.LOW {
+        background: linear-gradient(135deg, #34c759, #00c6ff);
+    }
+
+    .description-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .description-label {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 0.5rem;
+    }
+
+    .description-text {
+        color: white;
+        line-height: 1.5;
+    }
+
+    /* Image Section Styles */
+    .image-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .complaint-image {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .complaint-image:hover {
+        transform: scale(1.05);
+        border-color: #00c6ff;
+    }
+
+    /* Image Modal Styles */
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 90%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 8px;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 20px;
+        right: 35px;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .close-modal:hover {
+        color: #00c6ff;
+    }
+
+    .citizen-details {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+    }
+
+    .current-status {
+        margin-bottom: 1.5rem;
+    }
+
+    .status-text {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+    }
+
+    /* Feedback Section Styles */
+    .feedback-section {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+    }
+
+    .feedback-content {
+        margin-top: 0.5rem;
+    }
+
+    .feedback-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .rating-stars {
+        color: #ffd700;
+    }
+
+    .rating-number {
+        color: #00c6ff;
+        font-weight: bold;
+    }
+
+    .feedback-comment {
+        color: rgba(255, 255, 255, 0.9);
+        font-style: italic;
+        margin-top: 0.5rem;
+    }
+
+    .no-feedback {
+        color: rgba(255, 255, 255, 0.5);
+        font-style: italic;
+    }
+
+    .update-form {
+        margin-top: 1.5rem;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    select.form-control,
+    textarea.form-control {
+        width: 100%;
+        padding: 0.8rem;
+        background: rgba(20, 30, 48, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: white;
+        margin-bottom: 1rem;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    select.form-control {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1em;
+        padding-right: 2.5rem;
+        cursor: pointer;
+    }
+
+    select.form-control option {
+        background: rgba(20, 30, 48, 0.95);
+        color: white;
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        max-height: 150px;
+        resize: vertical;
+    }
+
+    select.form-control:focus,
+    textarea.form-control:focus {
+        border-color: #00c6ff;
+        box-shadow: 0 0 15px rgba(0, 198, 255, 0.2);
+        outline: none;
+    }
+
+    .priority-badge.HIGH {
+        background: linear-gradient(135deg, #ff3b30, #ff9500);
+    }
+
+    .priority-badge.MEDIUM {
+        background: linear-gradient(135deg, #ffd700, #ffaa00);
+    }
+
+    .priority-badge.LOW {
+        background: linear-gradient(135deg, #34c759, #00c6ff);
+    }
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #00c6ff;
+    }
+
+    .status-text.in-progress .status-dot {
+        background: #ffd700;
+    }
+
+    .status-text.resolved .status-dot {
+        background: #34c759;
+    }
+
+    .status-text.not-resolved .status-dot {
+        background: #ff3b30;
+    }
+
+    .update-btn {
+        width: 100%;
+        padding: 0.8rem;
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .update-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px rgba(0, 198, 255, 0.3);
+    }
+
+    .no-complaints {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 1200px) {
         .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
+            grid-template-columns: 1fr;
+            padding: 1rem;
         }
 
         .complaint-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            height: fit-content;
-        }
-
-        .complaint-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .complaint-id {
-            font-size: 1.2rem;
-            color: #00c6ff;
-        }
-
-        .priority-badge {
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            background: #2ecc71;
-        }
-
-        .priority-badge.LOW {
-            background: #2ecc71;
-        }
-
-        .description-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .description-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-bottom: 0.5rem;
-        }
-
-        .description-text {
-            color: white;
-            line-height: 1.5;
-        }
-
-        .citizen-details {
-            margin-bottom: 1.5rem;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-        }
-
-        .current-status {
-            margin-bottom: 1.5rem;
-        }
-
-        .status-text {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-        }
-
-        .update-form {
-            margin-top: 1.5rem;
-            width: 100%;
-            box-sizing: border-box;
+            margin-bottom: 1rem;
         }
 
         select.form-control,
         textarea.form-control {
-            width: 100%;
-            padding: 0.8rem;
-            background: rgba(20, 30, 48, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: white;
-            margin-bottom: 1rem;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
         }
 
-        select.form-control {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1em;
-            padding-right: 2.5rem;
-            cursor: pointer;
+        .performance-stats {
+            grid-template-columns: repeat(2, 1fr);
         }
+    }
 
-        select.form-control option {
-            background: rgba(20, 30, 48, 0.95);
-            color: white;
-            padding: 0.8rem;
-            font-size: 0.9rem;
+    @media (max-width: 768px) {
+        .performance-stats {
+            grid-template-columns: 1fr;
         }
+    }
+</style>
+{% endblock %}
 
-        textarea.form-control {
-            min-height: 100px;
-            max-height: 150px;
-            resize: vertical;
-        }
+{% block content %}
+<div class="dashboard-header">
+    <a href="{% url 'main:index' %}" class="back-btn">← Home</a>
+    <h1 class="department-title">{{ department.name }} Dashboard</h1>
 
-        select.form-control:focus,
-        textarea.form-control:focus {
-            border-color: #00c6ff;
-            box-shadow: 0 0 15px rgba(0, 198, 255, 0.2);
-            outline: none;
-        }
-
-        .priority-badge.HIGH {
-            background: linear-gradient(135deg, #ff3b30, #ff9500);
-        }
-
-        .priority-badge.MEDIUM {
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-        }
-
-        .priority-badge.LOW {
-            background: linear-gradient(135deg, #34c759, #00c6ff);
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #00c6ff;
-        }
-
-        .status-text.in-progress .status-dot {
-            background: #ffd700;
-        }
-
-        .status-text.resolved .status-dot {
-            background: #34c759;
-        }
-
-        .status-text.not-resolved .status-dot {
-            background: #ff3b30;
-        }
-
-        .update-btn {
-            width: 100%;
-            padding: 0.8rem;
-            background: linear-gradient(135deg, #00c6ff, #0072ff);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .update-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(0, 198, 255, 0.3);
-        }
-
-        @media (max-width: 1200px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-            }
-
-            .complaint-card {
-                margin-bottom: 1rem;
-            }
-
-            select.form-control,
-            textarea.form-control {
-                font-size: 16px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard-header">
-        <a href="{{ url_for('index') }}" class="back-btn">← Home</a>
-        <h1 class="department-title">{{ department_name }} Dashboard</h1>
-        <nav class="nav-tabs">
-            <a href="?status=all" class="nav-tab {% if selected_status == 'all' %}active{% endif %}">
-                All Complaints
-            </a>
-            <a href="?status=In-progress" class="nav-tab {% if selected_status == 'In-progress' %}active{% endif %}">
-                In Progress
-            </a>
-            <a href="?status=Resolved" class="nav-tab {% if selected_status == 'Resolved' %}active{% endif %}">
-                Resolved
-            </a>
-            <a href="?status=Not resolved" class="nav-tab {% if selected_status == 'Not resolved' %}active{% endif %}">
-                Not Resolved
-            </a>
-        </nav>
+    <!-- Performance Stats Section -->
+    <div class="performance-stats">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_complaints }}</div>
+            <div class="stat-label">Total Complaints</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ resolved_complaints }}</div>
+            <div class="stat-label">Resolved</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ pending_complaints }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ average_rating|floatformat:1 }}</div>
+            <div class="stat-label">Average Rating</div>
+            <div class="star-rating">
+                {% for i in "12345" %}
+                    {% if forloop.counter <= average_rating %}
+                        ★
+                    {% else %}
+                        ☆
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
-    <div class="grid-container">
+    <nav class="nav-tabs">
+        <a href="{% url 'main:department_dashboard' %}" class="nav-tab {% if status_filter == 'all' %}active{% endif %}">
+            All Complaints
+        </a>
+        <a href="{% url 'main:department_dashboard' %}?status=In-progress" class="nav-tab {% if status_filter == 'In-progress' %}active{% endif %}">
+            In Progress
+        </a>
+        <a href="{% url 'main:department_dashboard' %}?status=Resolved" class="nav-tab {% if status_filter == 'Resolved' %}active{% endif %}">
+            Resolved
+        </a>
+        <a href="{% url 'main:department_dashboard' %}?status=Not resolved" class="nav-tab {% if status_filter == 'Not resolved' %}active{% endif %}">
+            Not Resolved
+        </a>
+    </nav>
+</div>
+
+<div class="grid-container">
+    {% if complaints %}
         {% for complaint in complaints %}
             <div class="complaint-card">
                 <div class="complaint-header">
-                    <span class="complaint-id">Complaint #{{ complaint.complaint_id }}</span>
+                    <span class="complaint-id">Complaint #{{ complaint.id }}</span>
                     <span class="priority-badge {{ complaint.priority }}">{{ complaint.priority }}</span>
                 </div>
 
@@ -283,24 +466,62 @@
                     <div class="description-text">{{ complaint.description }}</div>
                 </div>
 
+                <!-- Image Section -->
+                {% if complaint.images %}
+                    <div class="image-section">
+                        <div class="description-label">Complaint Image</div>
+                        <img src="{{ complaint.images.url }}"
+                             alt="Complaint Image"
+                             class="complaint-image"
+                             onclick="openImageModal('{{ complaint.images.url }}')">
+                    </div>
+                {% endif %}
+
                 <div class="citizen-details">
                     <div class="description-label">Citizen Details</div>
                     <div class="description-text">
-                        {{ complaint.citizen.name }}<br>
+                        {{ complaint.citizen.user.get_full_name }}<br>
                         {{ complaint.citizen.contact_number }}
                     </div>
                 </div>
 
                 <div class="current-status">
                     <div class="description-label">Current Status</div>
-                    <div class="status-text {{ complaint.latest_status.lower().replace(' ', '-') }}">
+                    <div class="status-text {{ complaint.latest_status|lower|cut:' ' }}">
                         <span class="status-dot"></span>
                         {{ complaint.latest_status }}
                     </div>
                 </div>
 
-                <form method="POST" action="{{ url_for('update_complaint_status', complaint_id=complaint.complaint_id) }}" 
+                <!-- Feedback Section -->
+                <div class="feedback-section">
+                    <div class="description-label">Citizen Feedback</div>
+                    {% if complaint.feedback %}
+                        <div class="feedback-content">
+                            <div class="feedback-rating">
+                                <div class="rating-stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= complaint.feedback.rating %}
+                                            ★
+                                        {% else %}
+                                            ☆
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <span class="rating-number">{{ complaint.feedback.rating }}/5</span>
+                            </div>
+                            <div class="feedback-comment">
+                                "{{ complaint.feedback.comments }}"
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="no-feedback">No feedback provided yet</div>
+                    {% endif %}
+                </div>
+
+                <form method="POST" action="{% url 'main:update_complaint_status' complaint.id %}"
                       class="update-form">
+                    {% csrf_token %}
                     <select name="status" class="form-control" required>
                         <option value="In-progress" {% if complaint.latest_status == 'In-progress' %}selected{% endif %}>
                             In Progress
@@ -319,6 +540,36 @@
                 </form>
             </div>
         {% endfor %}
-    </div>
-</body>
-</html>
+    {% else %}
+        <div class="no-complaints">
+            <h3>No complaints found</h3>
+            <p>{% if status_filter != 'all' %}No complaints with status "{{ status_filter }}" found.{% else %}No complaints assigned to your department yet.{% endif %}</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="image-modal">
+    <span class="close-modal" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<script>
+function openImageModal(imageSrc) {
+    document.getElementById('imageModal').style.display = 'block';
+    document.getElementById('modalImage').src = imageSrc;
+}
+
+function closeImageModal() {
+    document.getElementById('imageModal').style.display = 'none';
+}
+
+// Close modal when clicking outside the image
+window.onclick = function(event) {
+    const modal = document.getElementById('imageModal');
+    if (event.target == modal) {
+        closeImageModal();
+    }
+}
+</script>
+{% endblock %}

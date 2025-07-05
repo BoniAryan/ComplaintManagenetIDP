@@ -1,12 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head>{% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Department Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{% static 'main/styles.css' %}">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --dark-gradient: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+            --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --neon-shadow: 0 0 20px rgba(0, 198, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-gradient);
+            min-height: 100vh;
+            color: #fff;
+        }
+
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -15,7 +37,6 @@
             padding: 1rem;
             position: relative;
             overflow: hidden;
-            background: var(--dark-gradient);
         }
 
         .login-card {
@@ -33,6 +54,26 @@
             margin: 1rem;
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(0, 198, 255, 0.5);
+            }
+            to {
+                text-shadow: 0 0 30px rgba(0, 198, 255, 0.8);
+            }
+        }
+
         .login-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -44,6 +85,7 @@
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             animation: glow 2s ease-in-out infinite alternate;
         }
 
@@ -74,6 +116,10 @@
             border-color: #00c6ff;
             box-shadow: 0 0 15px rgba(0, 198, 255, 0.2);
             outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
         }
 
         .form-label {
@@ -116,6 +162,10 @@
             box-shadow: var(--neon-shadow);
         }
 
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
         .register-link {
             text-align: center;
             margin-top: 1.5rem;
@@ -129,7 +179,7 @@
         }
 
         .register-link a:hover {
-            text-shadow: var(--neon-shadow);
+            text-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
         }
 
         .back-link {
@@ -138,7 +188,7 @@
             left: 1rem;
             padding: 0.5rem 1rem;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: 8px;
             color: white;
             text-decoration: none;
             transition: all 0.3s ease;
@@ -163,50 +213,83 @@
             color: #fff;
             font-size: 0.9rem;
         }
+
+        .success-message {
+            background: rgba(76, 217, 100, 0.1);
+            border-left: 4px solid #4cd964;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .login-card {
+                margin: 0.5rem;
+                padding: 1.5rem;
+            }
+
+            .login-title {
+                font-size: 1.5rem;
+            }
+
+            .back-link {
+                position: static;
+                margin-bottom: 1rem;
+                width: fit-content;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
-        
+        <a href="{% url 'main:index' %}" class="back-link">← Back to Home</a>
+
         <div class="login-card">
             <div class="login-header">
                 <h1 class="login-title">Department Login</h1>
                 <p class="login-subtitle">Access your department dashboard</p>
             </div>
 
-            <form method="POST" action="{{ url_for('department_login') }}">
+            <!-- Display messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="{% if message.tags == 'error' %}error-message{% elif message.tags == 'success' %}success-message{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'main:department_login' %}">
+                {% csrf_token %}
+
                 <div class="form-group">
-                    <input type="email" 
-                           class="form-control" 
-                           id="email" 
-                           name="email" 
-                           placeholder=" " 
+                    <input type="text"
+                           class="form-control"
+                           id="username"
+                           name="username"
+                           placeholder=" "
                            required>
-                    <label class="form-label" for="email">Email Address</label>
+                    <label class="form-label" for="username">Username</label>
                 </div>
 
                 <div class="form-group">
-                    <input type="text" 
-                           class="form-control" 
-                           id="contact_number" 
-                           name="contact_number" 
-                           placeholder=" " 
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           name="password"
+                           placeholder=" "
                            required>
-                    <label class="form-label" for="contact_number">Contact Number</label>
+                    <label class="form-label" for="password">Password</label>
                 </div>
-
-                {% if error %}
-                <div class="error-message">
-                    {{ error }}
-                </div>
-                {% endif %}
 
                 <button type="submit" class="login-btn">Login</button>
             </form>
 
             <div class="register-link">
-                <p>New department? <a href="{{ url_for('department_register') }}">Register here</a></p>
+                <p>New department? <a href="{% url 'main:department_register' %}">Register here</a></p>
             </div>
         </div>
     </div>

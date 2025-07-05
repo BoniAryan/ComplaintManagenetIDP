@@ -5,8 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Complaint Details</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
+        :root {
+            --dark-gradient: linear-gradient(135deg, #1e3c72, #2a5298);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+            --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-gradient);
+            color: white;
+            min-height: 100vh;
+        }
+
         .details-container {
             min-height: 100vh;
             display: flex;
@@ -33,6 +50,17 @@
             margin: 1rem;
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .details-header {
             display: flex;
             justify-content: space-between;
@@ -51,6 +79,8 @@
             padding: 0.4rem 1rem;
             border-radius: 20px;
             font-size: 0.9rem;
+            font-weight: 500;
+            color: white;
         }
 
         .priority-badge.HIGH {
@@ -76,6 +106,7 @@
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.7);
             margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .info-value {
@@ -154,6 +185,31 @@
             transform: translateX(-5px);
         }
 
+        .feedback-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .feedback-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .feedback-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 198, 255, 0.3);
+        }
+
         @media (max-width: 768px) {
             .details-card {
                 margin: 0.5rem;
@@ -163,17 +219,81 @@
             .timeline-item {
                 padding-left: 1.5rem;
             }
+
+            .details-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
         }
+        /* Add these styles inside your existing <style> tag */
+.image-container {
+    margin-top: 0.5rem;
+}
+
+.complaint-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.complaint-image:hover {
+    transform: scale(1.05);
+}
+
+/* Modal styles for full-size image view */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 90%;
+    margin-top: 5%;
+    border-radius: 8px;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #00c6ff;
+}
     </style>
 </head>
 <body>
     <div class="details-container">
-        <a href="{{ url_for('citizen_dashboard') }}" class="back-btn">← Back to Dashboard</a>
-        
+        <a href="{% url 'main:citizen_dashboard' %}" class="back-btn">← Back to Dashboard</a>
+
         <div class="details-card">
             <div class="details-header">
-                <span class="complaint-id">Complaint #{{ complaint.complaint_id }}</span>
+                <span class="complaint-id">Complaint #{{ complaint.id }}</span>
                 <span class="priority-badge {{ complaint.priority }}">{{ complaint.priority }}</span>
+            </div>
+
+            <div class="info-section">
+                <div class="info-label">Category</div>
+                <div class="info-value">{{ complaint.category }}</div>
             </div>
 
             <div class="info-section">
@@ -183,39 +303,102 @@
 
             <div class="info-section">
                 <div class="info-label">Department</div>
-                <div class="info-value">{{ department_name }}</div>
+                <div class="info-value">{{ complaint.department.name }}</div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-label">Date Submitted</div>
+                <div class="info-value">{{ complaint.date_submitted|date:"F d, Y \a\t g:i A" }}</div>
             </div>
 
             <div class="info-section">
                 <div class="info-label">Current Status</div>
                 <div class="info-value">
-                    {% if complaint.logs %}
-                        {{ complaint.logs[0].status }}
+                    {% if logs %}
+                        {{ logs.0.status }}
                     {% else %}
                         Pending
                     {% endif %}
                 </div>
             </div>
-
+{% if complaint.images %}
+    <div class="info-section">
+        <div class="info-label">Complaint Images</div>
+        <div class="info-value">
+            <div class="image-container">
+                <img src="{{ complaint.images.url }}" alt="Complaint Image" class="complaint-image">
+            </div>
+        </div>
+    </div>
+{% endif %}
             <div class="timeline">
                 <h3 class="info-label">Status Timeline</h3>
-                {% if complaint.logs %}
-                    {% for log in complaint.logs %}
+                {% if logs %}
+                    {% for log in logs %}
                         <div class="timeline-item">
-                            <div class="timeline-date">{{ log.timestamp.strftime('%B %d, %Y at %I:%M %p') }}</div>
+                            <div class="timeline-date">{{ log.timestamp|date:"F d, Y \a\t g:i A" }}</div>
                             <div class="timeline-status">{{ log.status }}</div>
                             <div class="timeline-remarks">{{ log.remarks }}</div>
                         </div>
                     {% endfor %}
                 {% else %}
                     <div class="timeline-item">
-                        <div class="timeline-date">{{ complaint.date_submitted.strftime('%B %d, %Y') }}</div>
+                        <div class="timeline-date">{{ complaint.date_submitted|date:"F d, Y" }}</div>
                         <div class="timeline-status">Complaint Registered</div>
                         <div class="timeline-remarks">Awaiting department response</div>
                     </div>
                 {% endif %}
             </div>
+
+            <!-- Feedback Section -->
+            {% if complaint.get_latest_status == 'Resolved' and not complaint.feedback %}
+                <div class="feedback-section">
+                    <div class="info-label">Provide Feedback</div>
+                    <p>Your complaint has been resolved. Please provide your feedback.</p>
+                    <a href="{% url 'main:submit_feedback' complaint.id %}" class="feedback-btn">Submit Feedback</a>
+                </div>
+            {% elif complaint.feedback %}
+                <div class="info-section">
+                    <div class="info-label">Your Feedback</div>
+                    <div class="info-value">
+                        <strong>Rating:</strong> {{ complaint.feedback.rating }}/5<br>
+                        <strong>Comments:</strong> {{ complaint.feedback.comments }}
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
+<!-- Add this script before </body> -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const complaintImage = document.querySelector('.complaint-image');
+    if (complaintImage) {
+        complaintImage.addEventListener('click', function() {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'image-modal';
+            modal.innerHTML = `
+                <span class="close-modal">&times;</span>
+                <img class="modal-content" src="${this.src}" alt="Complaint Image">
+            `;
+
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+
+            // Close modal functionality
+            const closeBtn = modal.querySelector('.close-modal');
+            closeBtn.addEventListener('click', function() {
+                modal.remove();
+            });
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        });
+    }
+});
+</script>
 </body>
 </html>

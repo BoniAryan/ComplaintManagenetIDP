@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>{% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citizen Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'main/'%}styles.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            --secondary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --dark-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+            --box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            --neon-shadow: 0 0 20px rgba(0, 198, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-gradient);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            background: var(--dark-gradient);
+        }
+
+        .cyber-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(0, 198, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 198, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 600px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--box-shadow);
+            animation: fadeIn 0.5s ease-out;
+            margin: 1rem;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .register-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: var(--secondary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .register-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            height: 3rem;
+        }
+
+        .form-control:focus {
+            border-color: #00c6ff;
+            box-shadow: 0 0 15px rgba(0, 198, 255, 0.2);
+            outline: none;
+        }
+
+        .form-label {
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            padding: 0 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            font-size: 0.9rem;
+            background: transparent;
+        }
+
+        .form-control:focus ~ .form-label,
+        .form-control:not(:placeholder-shown) ~ .form-label {
+            top: -0.5rem;
+            left: 0.8rem;
+            font-size: 0.8rem;
+            color: #00c6ff;
+            background: rgba(20, 30, 48, 0.95);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+            padding-right: 2.5rem;
+        }
+
+        select.form-control option {
+            background: rgba(20, 30, 48, 0.95);
+            color: #fff;
+            padding: 0.5rem;
+        }
+
+        textarea.form-control {
+            height: auto;
+            min-height: 3rem;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--secondary-gradient);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .login-link a {
+            color: #00c6ff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .login-link a:hover {
+            text-shadow: var(--neon-shadow);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .back-link:hover {
+            color: #00c6ff;
+            transform: translateX(-5px);
+        }
+
+        .error-message {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+        }
+
+        .error-message ul {
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+        .field-error {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="cyber-grid"></div>
+        <a href="{% url 'main:index' %}" class="back-link">← Back to Home</a>
+
+        <div class="register-card">
+            <div class="register-header">
+                <h1 class="register-title">Create Account</h1>
+                <p class="register-subtitle">Join our community and start filing complaints</p>
+            </div>
+
+            <!-- Display Django messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="error-message">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Display form errors -->
+            {% if form.non_field_errors %}
+                <div class="error-message">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'main:citizen_register' %}">
+                {% csrf_token %}
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <input type="text"
+                               class="form-control"
+                               id="username"
+                               name="username"
+                               placeholder=" "
+                               value="{{ form.username.value|default:'' }}"
+                               required>
+                        <label class="form-label" for="username">Username</label>
+                        {% if form.username.errors %}
+                            <div class="field-error">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email"
+                               class="form-control"
+                               id="email"
+                               name="email"
+                               placeholder=" "
+                               value="{{ form.email.value|default:'' }}"
+                               required>
+                        <label class="form-label" for="email">Email Address</label>
+                        {% if form.email.errors %}
+                            <div class="field-error">{{ form.email.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text"
+                               class="form-control"
+                               id="first_name"
+                               name="first_name"
+                               placeholder=" "
+                               value="{{ form.first_name.value|default:'' }}"
+                               required>
+                        <label class="form-label" for="first_name">First Name</label>
+                        {% if form.first_name.errors %}
+                            <div class="field-error">{{ form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text"
+                               class="form-control"
+                               id="last_name"
+                               name="last_name"
+                               placeholder=" "
+                               value="{{ form.last_name.value|default:'' }}"
+                               required>
+                        <label class="form-label" for="last_name">Last Name</label>
+                        {% if form.last_name.errors %}
+                            <div class="field-error">{{ form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <input type="tel"
+                               class="form-control"
+                               id="contact_number"
+                               name="contact_number"
+                               placeholder=" "
+                               pattern="[0-9]{10}"
+                               value="{{ form.contact_number.value|default:'' }}"
+                               required>
+                        <label class="form-label" for="contact_number">Contact Number</label>
+                        {% if form.contact_number.errors %}
+                            <div class="field-error">{{ form.contact_number.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <select class="form-control"
+                                id="gender"
+                                name="gender"
+                                required>
+                            <option value="" disabled {% if not form.gender.value %}selected{% endif %}></option>
+                            <option value="M" {% if form.gender.value == 'M' %}selected{% endif %}>Male</option>
+                            <option value="F" {% if form.gender.value == 'F' %}selected{% endif %}>Female</option>
+                            <option value="O" {% if form.gender.value == 'O' %}selected{% endif %}>Other</option>
+                        </select>
+                        <label class="form-label" for="gender">Gender</label>
+                        {% if form.gender.errors %}
+                            <div class="field-error">{{ form.gender.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password"
+                               class="form-control"
+                               id="password1"
+                               name="password1"
+                               placeholder=" "
+                               required>
+                        <label class="form-label" for="password1">Password</label>
+                        {% if form.password1.errors %}
+                            <div class="field-error">{{ form.password1.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <input type="password"
+                               class="form-control"
+                               id="password2"
+                               name="password2"
+                               placeholder=" "
+                               required>
+                        <label class="form-label" for="password2">Confirm Password</label>
+                        {% if form.password2.errors %}
+                            <div class="field-error">{{ form.password2.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <textarea class="form-control"
+                              id="address"
+                              name="address"
+                              placeholder=" "
+                              rows="3"
+                              required>{{ form.address.value|default:'' }}</textarea>
+                    <label class="form-label" for="address">Address</label>
+                    {% if form.address.errors %}
+                        <div class="field-error">{{ form.address.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="submit-btn">Register</button>
+            </form>
+
+            <div class="login-link">
+                <p>Already have an account? <a href="{% url 'main:citizen_login' %}">Login here</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

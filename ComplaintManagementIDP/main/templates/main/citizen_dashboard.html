@@ -5,8 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Citizen Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+            --neon-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
         .dashboard-header {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
@@ -30,6 +47,11 @@
             z-index: 10;
         }
 
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
         .welcome-title {
             font-size: 2.5rem;
             margin-top: 1rem;
@@ -37,6 +59,11 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
         }
 
         .profile-section {
@@ -88,6 +115,16 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
+        .info-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+        }
+
         .complaints-section {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
@@ -95,6 +132,15 @@
             border-radius: 15px;
             padding: 2rem;
             animation: slideIn 0.5s ease-out;
+        }
+
+        .neon-text {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .complaint-card {
@@ -112,6 +158,21 @@
         .complaint-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--neon-shadow);
+        }
+
+        .complaint-card h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .complaint-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         .complaint-status {
@@ -132,6 +193,27 @@
             animation: pulse 2s infinite;
         }
 
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
         .new-complaint-btn {
             position: fixed;
             bottom: 2rem;
@@ -149,6 +231,42 @@
         .new-complaint-btn:hover {
             transform: translateY(-5px) scale(1.05);
             box-shadow: 0 10px 20px rgba(0, 198, 255, 0.3);
+        }
+
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .alert-warning {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            border-radius: 10px;
+        }
+
+        .no-complaints {
+            text-align: center;
+            padding: 3rem;
+            opacity: 0.8;
+            font-size: 1.1rem;
         }
 
         @keyframes slideIn {
@@ -195,37 +313,43 @@
             .info-item {
                 padding: 0.8rem;
             }
+
+            .action-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="dashboard-header">
-        <a href="{{ url_for('home') }}" class="back-btn">← Home</a>
+        <a href="{% url 'main:index' %}" class="back-btn">← Home</a>
         <div class="header-content">
-            <h1 class="welcome-title">Welcome, {{ citizen.name }}!</h1>
+            <h1 class="welcome-title">Welcome, {{ citizen.user.get_full_name }}!</h1>
         </div>
     </div>
 
     <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} glass-card">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} glass-card">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
 
         <div class="profile-section">
             <div class="profile-card">
                 <div class="profile-avatar">
-                    {{ citizen.name[0] | upper }}
+                    {{ citizen.user.first_name|first|upper }}
                 </div>
                 <div class="profile-info">
                     <div class="info-item">
+                        <div class="info-label">Full Name</div>
+                        <div class="info-value">{{ citizen.user.get_full_name }}</div>
+                    </div>
+                    <div class="info-item">
                         <div class="info-label">Email</div>
-                        <div class="info-value">{{ citizen.email }}</div>
+                        <div class="info-value">{{ citizen.user.email }}</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Contact</div>
@@ -237,7 +361,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label">Gender</div>
-                        <div class="info-value">{{ citizen.gender }}</div>
+                        <div class="info-value">{{ citizen.get_gender_display }}</div>
                     </div>
                 </div>
             </div>
@@ -247,29 +371,40 @@
                 {% if complaints %}
                     {% for complaint in complaints %}
                         <div class="complaint-card">
-                            <h3>{{ complaint.description }}</h3>
+                            <h3>{{ complaint.category }} - Complaint #{{ complaint.id }}</h3>
+                            <div class="complaint-meta">
+                                <span>Department: {{ complaint.department.name }}</span>
+                                <span>Priority: {{ complaint.priority }}</span>
+                                <span>{{ complaint.date_submitted|date:"M d, Y" }}</span>
+                            </div>
+                            <p>{{ complaint.description|truncatewords:20 }}</p>
+
                             <div class="complaint-status">
                                 <span class="status-dot"></span>
-                                {{ complaint.logs[0].status if complaint.logs else 'Pending' }}
+                                {{ complaint.latest_status|default:"Pending" }}
                             </div>
+
                             <div class="action-buttons">
-                                <a href="{{ url_for('view_complaint', complaint_id=complaint.complaint_id) }}" 
+                                <a href="{% url 'main:view_complaint' complaint.id %}"
                                    class="btn">View Details</a>
-                                
-                                {% if complaint.logs and complaint.logs[0].status == 'Resolved' %}
-                                    <a href="{{ url_for('feedback_form', complaint_id=complaint.complaint_id) }}" 
+
+                                {% if complaint.latest_status == 'Resolved' and not complaint.feedback %}
+                                    <a href="{% url 'main:submit_feedback' complaint.id %}"
                                        class="btn">Provide Feedback</a>
                                 {% endif %}
                             </div>
                         </div>
                     {% endfor %}
                 {% else %}
-                    <p>No complaints registered yet.</p>
+                    <div class="no-complaints">
+                        <p>No complaints registered yet.</p>
+                        <p>Click the "New Complaint" button to register your first complaint.</p>
+                    </div>
                 {% endif %}
             </div>
         </div>
 
-        <a href="{{ url_for('register_complaint') }}" class="new-complaint-btn">
+        <a href="{% url 'main:register_complaint' %}" class="new-complaint-btn">
             + New Complaint
         </a>
     </div>

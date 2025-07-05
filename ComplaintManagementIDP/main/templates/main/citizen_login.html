@@ -1,12 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Citizen Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{% static 'main/'%}styles.css">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            --accent-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --dark-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+            --box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            --neon-shadow: 0 0 20px rgba(0, 198, 255, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-gradient);
+            color: white;
+            overflow-x: hidden;
+        }
+
         .login-container {
             min-height: 100vh;
             display: flex;
@@ -149,22 +172,6 @@
             text-shadow: var(--neon-shadow);
         }
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes fadeIn {
-            from { 
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .back-link {
             position: absolute;
             top: 1rem;
@@ -186,6 +193,37 @@
             background: rgba(255, 255, 255, 0.2);
             transform: translateX(-5px);
         }
+
+        .error-message {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+            font-size: 0.9rem;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
+        }
     </style>
 </head>
 <body>
@@ -196,41 +234,46 @@
                 <p>Welcome back! Please login to continue.</p>
             </div>
 
-            <form method="POST" action="{{ url_for('citizen_login') }}">
+            <!-- Display Django messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="error-message">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'main:citizen_login' %}">
+                {% csrf_token %}
+
                 <div class="form-group">
-                    <input type="email" 
-                           class="form-control" 
-                           id="email" 
-                           name="email" 
-                           placeholder=" " 
+                    <input type="text"
+                           class="form-control"
+                           id="username"
+                           name="username"
+                           placeholder=" "
                            required>
-                    <label class="form-label" for="email">Email Address</label>
+                    <label class="form-label" for="username">Username</label>
                 </div>
 
                 <div class="form-group">
-                    <input type="text" 
-                           class="form-control" 
-                           id="contact_number" 
-                           name="contact_number" 
-                           placeholder=" " 
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           name="password"
+                           placeholder=" "
                            required>
-                    <label class="form-label" for="contact_number">Contact Number</label>
+                    <label class="form-label" for="password">Password</label>
                 </div>
-
-                {% if error %}
-                <div class="error-message">
-                    {{ error }}
-                </div>
-                {% endif %}
 
                 <button type="submit" class="submit-btn">Login</button>
             </form>
 
             <div class="register-link">
-                <p>Don't have an account? <a href="{{ url_for('citizen_register') }}">Register here</a></p>
+                <p>Don't have an account? <a href="{% url 'main:citizen_register' %}">Register here</a></p>
             </div>
 
-            <a href="{{ url_for('index') }}" class="back-link">← Back to Home</a>
+            <a href="{% url 'main:index' %}" class="back-link">← Back to Home</a>
         </div>
     </div>
 </body>

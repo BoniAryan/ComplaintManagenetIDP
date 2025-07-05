@@ -5,8 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Complaint</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/styles.css' %}">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+            --dark-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.2);
+            --box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            --neon-shadow: 0 0 20px rgba(0, 198, 255, 0.5);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--dark-gradient);
+            min-height: 100vh;
+        }
+
         .complaint-container {
             min-height: 100vh;
             display: flex;
@@ -24,7 +42,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(0, 198, 255, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 198, 255, 0.1) 1px, transparent 1px);
             background-size: 50px 50px;
@@ -153,9 +171,49 @@
             transform: translateX(-5px);
         }
 
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            color: #fff;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .errorlist {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0;
+        }
+
+        .errorlist li {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+
         @keyframes moveGrid {
             0% { transform: translateY(0); }
             100% { transform: translateY(50px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.2); }
         }
 
         /* Responsive adjustments */
@@ -173,42 +231,93 @@
                 font-size: 16px; /* Prevents zoom on mobile */
             }
         }
+.form-help {
+    margin-top: 0.5rem;
+}
+
+.form-control[type="file"] {
+    padding: 0.8rem;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-control[type="file"]:hover {
+    border-color: rgba(0, 198, 255, 0.5);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.form-control[type="file"]:focus {
+    border-color: #00c6ff;
+    box-shadow: 0 0 15px rgba(0, 198, 255, 0.3);
+}
     </style>
 </head>
 <body>
     <div class="complaint-container">
         <div class="cyber-grid"></div>
-        
+
         <div class="complaint-card">
             <div class="complaint-header">
                 <h1 class="complaint-title">Register Complaint</h1>
                 <p class="complaint-subtitle">Describe your issue in detail</p>
             </div>
 
-            <form method="POST" action="{{ url_for('register_complaint') }}">
+            <!-- Django Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+
+<form method="POST" action="{% url 'main:register_complaint' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+
                 <div class="form-group">
-                    <textarea class="form-control" 
-                              id="description" 
-                              name="description" 
-                              rows="5" 
-                              placeholder=" "
-                              required></textarea>
-                    <label class="form-label" for="description">Complaint Description</label>
+                    {{ form.description }}
+                    <label class="form-label" for="{{ form.description.id_for_label }}">Complaint Description</label>
+                    {% if form.description.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.description.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                 </div>
 
                 <div class="form-group">
-                    <textarea class="form-control" 
-                              id="address" 
-                              rows="2" 
-                              readonly>{{ citizen.address }}</textarea>
+                    <textarea class="form-control"
+                              id="address"
+                              rows="2"
+                              readonly>{{ user.citizen.address }}</textarea>
                     <label class="form-label" for="address">Your Address</label>
                 </div>
-
+               <!-- Add this new form group after the description field -->
+<div class="form-group">
+    {{ form.images }}
+    <label class="form-label" for="{{ form.images.id_for_label }}">Upload Image (Optional)</label>
+    <div class="form-help">
+        <small style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem;">
+            Upload an image (max 5MB). Supported formats: JPG, PNG, GIF
+        </small>
+    </div>
+    {% if form.images.errors %}
+        <ul class="errorlist">
+            {% for error in form.images.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>
                 <button type="submit" class="submit-btn">Submit Complaint</button>
             </form>
 
             <div class="back-link">
-                <a href="{{ url_for('citizen_dashboard') }}">← Back to Dashboard</a>
+                <a href="{% url 'main:citizen_dashboard' %}">← Back to Dashboard</a>
             </div>
         </div>
     </div>
